@@ -1,14 +1,16 @@
 import React, { useContext } from "react";
-import { useParams } from "react-router";
+import { useParams } from "react-router-dom"; // Fixed import
+import { CartContext } from "../contexts/CartContext.jsx"; // Added CartContext for add to cart functionality
 import { ProductContext } from "../contexts/ProductContext.jsx";
 
 const ProductDetails = () => {
 	// get the product id from url
 	const { id } = useParams();
 	const { products } = useContext(ProductContext);
+	const { addToCart } = useContext(CartContext); // Get addToCart function
 
-	//get the single product based on id
-	const product = products[id];
+	//get the single product based on id - fixed to use find method
+	const product = products.find(item => item.id === parseInt(id) || item.id === id);
 
 	// if product is not found
 	if (!product) {
@@ -21,6 +23,7 @@ const ProductDetails = () => {
 
 	// destructure product
 	const { title, price, description, image } = product;
+	
 	return (
 		<section
 			className="pt-[450px] md:pt-32 pb-[400px] md:pb-12 lg:py-32 h-screen flex items-center"
@@ -31,7 +34,7 @@ const ProductDetails = () => {
 				<div className="flex flex-col lg:flex-row items-center">
 					{/* image */}
 					<div className="flex flex-1 justify-center items-center mb-8 lg:mb-0">
-						<img className="max-w-[200px] lg:max-w-xs" src={image} alt="" />
+						<img className="max-w-[200px] lg:max-w-xs" src={image} alt={title} />
 					</div>
 					{/* text */}
 					<div className="flex-1 text-center lg:text-left">
@@ -42,7 +45,10 @@ const ProductDetails = () => {
 							$ {price}
 						</div>
 						<p className="mb-8">{description}</p>
-						<button className="bg-black py-4 px-8 text-white">
+						<button 
+							className="bg-black py-4 px-8 text-white"
+							onClick={() => addToCart(product, product.id)} // Added onClick handler
+						>
 							Add to cart
 						</button>
 					</div>
